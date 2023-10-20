@@ -1,6 +1,6 @@
 # Example file showing a circle moving on screen
+# pylint: disable=no-member
 import pygame
-from pygame.locals import *
 
 # pygame setup
 pygame.init()
