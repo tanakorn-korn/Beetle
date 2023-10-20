@@ -42,3 +42,50 @@ while running:
     dt = clock.tick(60) / 1000
 
 pygame.quit()
+
+# # โหลดรูปภาพ animation
+# animation_frames = [
+#     pygame.image.load('static/image/jackfree/png/Walk (1).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (2).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (3).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (4).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (5).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (6).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (7).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (8).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (9).png'),
+#     pygame.image.load('static/image/jackfree/png/Walk (10).png'),
+    
+#     # เพิ่มรูปภาพเฟรมอื่น ๆ ตรงนี้
+# ]
+
+# # ตำแหน่งเริ่มต้นของ animation
+# animation_frame = 0
+# frame_rate = 10  # อัตราเฟรมต่อวินาที
+# frame_delay = 1000 / frame_rate  # คำนวณเวลาที่ต้องรอระหว่างเฟรม
+
+# running = True
+# last_frame_time = pygame.time.get_ticks()
+
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+
+#     # คำนวณเวลา
+#     current_time = pygame.time.get_ticks()
+#     if current_time - last_frame_time >= frame_delay:
+#         # แสดงเฟรมถัดไปใน animation
+#         animation_frame = (animation_frame + 1) % len(animation_frames)
+#         last_frame_time = current_time
+
+#     # ล้างหน้าต่าง
+#     screen.fill((0, 0, 0))
+
+#     # แสดง animation frame ปัจจุบัน
+#     screen.blit(animation_frames[animation_frame], (0, 0))
+
+#     # อัปเดตหน้าต่าง
+#     pygame.display.flip()
+
+# pygame.quit()
