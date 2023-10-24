@@ -9,7 +9,7 @@ clock = pygame.time.Clock()
 
 # โหลดรูปภาพพื้นหลัง
 # โหลดรูปภาพพื้นหลังแบบรวมทั้งหมดเข้าด้วยกัน
-background_combined = pygame.image.load('static/image/graveyardtilesetnew/png/BG_combined.png').convert()
+background_combined = pygame.image.load('static/image/graveyardtilesetnew/png/BG_combined-1.png').convert()
 # ตำแหน่ง X ของรูปภาพพื้นหลัง
 background_x = -2000
 
@@ -84,7 +84,7 @@ player = Player(200, 495, 90, 110)
 floor = Floor(0, 600, floor_image)
 
 # คำนวณความเร็วของพื้นหลัง
-background_speed = 0.5
+background_speed = 0.01
 
 running = True
 last_frame_time = pygame.time.get_ticks()
