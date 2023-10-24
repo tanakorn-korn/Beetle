@@ -20,7 +20,7 @@ floor_width = floor_image.get_width()
 
 class Player:
     def __init__(self, x, y, width, height):
-        self.speed = 0.1
+        self.speed = 2
         self.x = x
         self.y = y
         self.animation_frames = [
@@ -84,7 +84,7 @@ player = Player(200, 495, 90, 110)
 floor = Floor(0, 600, floor_image)
 
 # คำนวณความเร็วของพื้นหลัง
-background_speed = 0.01
+background_speed = 0.05
 
 running = True
 last_frame_time = pygame.time.get_ticks()
@@ -94,13 +94,48 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
-    # ตรวจสอบการกดปุ่มลูกศรขวา
-    # keys = pygame.key.get_pressed()
-    # if keys[pygame.K_RIGHT]:
-    #     player.move_right()
- 
-    # elif keys[pygame.K_LEFT]:
-    #     player.move_left()
+    # ตรวจสอบการกดปุ่มลูกศรลง
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_DOWN]:
+        # ถ้ากดปุ่มลูกศรลง (DOWN) ให้ Player อยู่ในสถานะการนั่งลง
+        player.animation_frames = [
+            pygame.image.load('static/image/jackfree/png/Slide (1).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (2).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (3).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (4).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (5).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (6).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (7).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (8).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (9).png'),
+            pygame.image.load('static/image/jackfree/png/Slide (10).png')
+            # เพิ่มรูปภาพเฟรมอื่น ๆ ตรงนี้
+        ]
+        player.animation_frames = [pygame.transform.scale(frame, (90, 90)) for frame in player.animation_frames]
+
+        # อัปเดตตำแหน่งของตัวละคร
+        player.move(0, 0)  # เคลื่อนที่ลงตามแกน X
+
+        # แสดงตัวละครในสถานะการนั่งลง
+        player.draw()
+    else:
+        # ถ้าไม่กดปุ่มลูกศรลง ให้ Player อยู่ในสถานะการเดิน
+        player.animation_frames = [
+            pygame.image.load('static/image/jackfree/png/Walk (1).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (2).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (3).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (4).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (5).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (6).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (7).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (8).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (9).png'),
+            pygame.image.load('static/image/jackfree/png/Walk (10).png')
+            # เพิ่มรูปภาพเฟรมอื่น ๆ ตรงนี้
+        ]
+        player.animation_frames = [pygame.transform.scale(frame, (90, 110)) for frame in player.animation_frames]
+        # อัปเดตตำแหน่งของตัวละครเมื่อไม่กดปุ่มลูกศรลง
+        player.move(0, 0)  # เคลื่อนที่ขึ้นตามแกน X
 
     # คำนวณการเคลื่อนที่ของพื้นหลัง floor ตามตำแหน่งของตัวละคร
     for floor in floors:
