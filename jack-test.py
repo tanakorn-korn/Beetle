@@ -247,6 +247,7 @@
 # pylint: disable=no-member
 import pygame
 import random
+import sys
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 720))
@@ -261,7 +262,7 @@ floor_width = floor_image.get_width()
 class Player:
     def __init__(self, x, y, width, height):
         self.background_speed = 0.01
-        self.speed = 0.2
+        self.speed = 0.5
         self.x = x
         self.y = y
         self.standing_frames = [
@@ -298,16 +299,33 @@ class Player:
             pygame.image.load('static/image/jackfree/png/Run (7).png'),
             pygame.image.load('static/image/jackfree/png/Run (8).png'),
         ]
+        self.jumping_frames = [
+            pygame.image.load('static/image/jackfree/png/Jump (1).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (2).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (3).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (4).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (5).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (6).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (7).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (8).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (9).png'),
+            pygame.image.load('static/image/jackfree/png/Jump (10).png'),
+        ]
         self.standing_frames = [pygame.transform.scale(frame, (width, height)) for frame in self.standing_frames]
         self.sitting_frames = [pygame.transform.scale(frame, (width, height - 20)) for frame in self.sitting_frames]
         self.runing_frames = [pygame.transform.scale(frame, (width, height)) for frame in self.runing_frames]
-        self.rect = self.standing_frames[0].get_rect(topleft=(self.x, self.y))
-        self.animation_frames = self.standing_frames
+        self.jumping_frames = [pygame.transform.scale(frame, (width, height)) for frame in self.jumping_frames]
+
+        # กำหนด self.animation_frames ให้เริ่มจาก self.standing_frames
+        self.animation_frames = self.standing_frames  
+
         self.animation_frame = 0
         self.frame_rate = 10
         self.frame_delay = 1000 / self.frame_rate
         self.is_sitting = False
         self.is_runing = False
+        self.jumping = False
+        self.rect = self.animation_frames[self.animation_frame].get_rect(topleft=(self.x, self.y))
 
     def move(self, dx, dy):
         self.x += dx
@@ -315,30 +333,65 @@ class Player:
         self.rect.move_ip(dx, dy)
 
     def toggle_sitting(self):
-        if self.is_sitting:
-            self.is_sitting = False
-            self.animation_frames = self.standing_frames
-            self.y += -20
-        else:
+        if not self.is_sitting:
             self.is_sitting = True
             self.animation_frames = self.sitting_frames
-            self.y -= -20
+            self.y += 0  # ปรับค่าตามความสูงที่คุณต้องการ
+        else:
+            self.is_sitting = False
+            self.animation_frames = self.standing_frames
+            self.y -= 0  # ปรับค่าตามความสูงที่คุณต้องการ
     
     def toggle_runing(self):
         if self.is_runing:
             self.is_runing = False
             self.animation_frames = self.standing_frames
-            self.speed = 0.2
+            self.speed = 0.5
             self.background_speed = 0.01
         else:
             self.is_runing = True
             self.animation_frames = self.runing_frames
-            self.speed = 0.5
+            self.speed = 0.8
             self.background_speed = 0.03
+    
+    def toggle_jumping(self):
+        if not self.jumping:  # ตรวจสอบว่ายังไม่ได้กระโดดก่อน
+            self.jumping = True
+            self.animation_frames = self.jumping_frames
+            self.jump_height = 0  # เพิ่มตัวแปรเก็บความสูงของกระโดด
+            self.jump_speed = -1.5  # ปรับค่าตามสไปด์ของเกมของคุณ
+        else:
+            self.jump_height = 0  # รีเซ็ตความสูงของกระโดด
+            self.jump_speed = -1.5  # รีเซ็ตความเร็วของกระโดด
+            self.animation_frames = self.jumping_frames  # เปลี่ยนเป็นอนิเมชันกระโดด
 
     def draw(self):
         if 0 <= self.animation_frame < len(self.animation_frames):
             screen.blit(self.animation_frames[self.animation_frame], self.rect.topleft)
+    
+    def check_collision(self, floor):
+        if 0 <= self.animation_frame < len(self.animation_frames):
+            player_rect = self.animation_frames[self.animation_frame].get_rect(topleft=(self.x, self.y))
+            floor_rect = floor.image.get_rect(topleft=(floor.x, floor.y))
+            floor_rect = floor.get_rect()
+            return player_rect.colliderect(floor_rect)
+        return False
+
+    def update(self):
+        # เพิ่มบรรทัดนี้เพื่ออัปเดตตำแหน่งของ player.rect
+        self.rect.topleft = (self.x, self.y)
+
+        if self.jumping:
+            self.jump_height += self.jump_speed
+            self.y += self.jump_speed
+
+            if self.jump_height < -150:  # ปรับค่าตามความสูงของกระโดด
+                self.jump_speed = 2
+                self.animation_frames = self.standing_frames
+            if self.jump_height >= 0:
+                self.jumping = False
+
+                
 
 class Floor:
     def __init__(self, x, y):
@@ -359,12 +412,14 @@ floors = [Floor(i * floor_width, random.randint(500, 620)) for i in range(40)]
 player = Player(200, 460, 90, 110)
 
 running = True
+jumping = False
 last_frame_time = pygame.time.get_ticks()
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit()
+            sys.exit()
 
     keys = pygame.key.get_pressed()
 
@@ -377,6 +432,15 @@ while running:
             player.toggle_sitting()
         down_pressed = False
 
+    # ตรวจสอบว่าปุ่ม "spec" ถูกกดหรือไม่ และกระโดดเมื่อกดปุ่ม
+    if keys[pygame.K_SPACE] and not jumping:
+        player.toggle_jumping()
+        print("Jumping!")
+        jumping = True
+    if not keys[pygame.K_SPACE]:
+        jumping = False
+    pygame.display.update()
+
     if not down_pressed:
         if keys[pygame.K_RIGHT]:
             if not player.is_runing:
@@ -388,12 +452,14 @@ while running:
     for floor in floors:
         if player.rect.colliderect(floor.rect):
             player_on_floor = True
-            player.y = floor.y - player.rect.height
+            if player.y < floor.y:
+                player.y = floor.y - player.rect.height
             break
 
     if not player_on_floor:
-        player.y += player.speed
+        player.y += 0.7
 
+    player.update()  # เพิ่มบรรทัดนี้เพื่ออัปเดตตำแหน่งของผู้เล่น
     for floor in floors:
         floor.x -= player.speed
         floor.rect.topleft = (floor.x, floor.y)
